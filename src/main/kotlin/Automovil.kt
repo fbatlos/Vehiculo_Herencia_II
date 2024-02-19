@@ -20,7 +20,7 @@ class Automovil(var tipo:tipos,
 
     fun realizaDerrape():Float{
         combustibleActual-=0.5f
-        return capacidadCombistible
+        return combustibleActual
     }
 
 
