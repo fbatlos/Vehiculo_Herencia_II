@@ -29,7 +29,8 @@ open class Vehiculo(open val marca: String, open val modelo: String, open val ca
 
     open fun repostar(cantida:Float):Float{
         if (cantida>capacidadCombistible|| cantida>(combustibleActual+cantida) ||cantida<= 0){
-            combustibleActual = capacidadCombistible.toFloat()
+            combustibleActual = capacidadCombistible
+            return combustibleActual
         }
         combustibleActual += cantida
         return cantida.redondear(2)
