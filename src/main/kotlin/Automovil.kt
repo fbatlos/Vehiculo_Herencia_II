@@ -2,11 +2,12 @@ class Automovil(
                 nombre:String,
                 marca:String,
                 modelo:String,
-                val esElectrico :Boolean,
-                var condicionBritanica:Boolean = false,
                 capacidadCombustible:Float,
                 combustibleActual:Float,
-                kilometrosActuales: Float):Vehiculo(nombre,marca , modelo , capacidadCombustible , combustibleActual ,kilometrosActuales
+                kilometrosActuales: Float,
+                val esElectrico :Boolean,
+                var condicionBritanica:Boolean = false
+                ):Vehiculo(nombre,marca , modelo , capacidadCombustible , combustibleActual ,kilometrosActuales
 ){
 
     fun cambiarCondicionBritania(nuevaCondicion:Boolean){
@@ -21,32 +22,36 @@ class Automovil(
     }
 
     fun realizaDerrape():Float{
-        combustibleActual-=0.5f
+        if (esElectrico){
+            combustibleActual -= 0.625f
+        }else {
+            combustibleActual -= 0.75f
+        }
         return combustibleActual
     }
 
 
-    override fun realizaViaje(distancia: Int): Int {
+    override fun realizaViaje(distancia: Float): Float {
         if (esElectrico){
             val DistanciaTotal = calcularAutonomia()
             if (DistanciaTotal>distancia) {
                 combustibleActual -=(distancia/ KM_Litro_Hibrido)
                 kilometrosActuales +=distancia
-                return 0
+                return 0f
             }
             combustibleActual = 0F
             kilometrosActuales += (distancia - DistanciaTotal).toInt()
-            return (distancia - DistanciaTotal).toInt()
+            return (distancia - DistanciaTotal).redondear(2)
         }else {
             val DistanciaTotal = calcularAutonomia()
             if (DistanciaTotal > distancia) {
                 combustibleActual -= (distancia / KM_Litros_GAS)
                 kilometrosActuales += distancia
-                return 0
+                return 0f
             }
             combustibleActual = 0F
             kilometrosActuales += (distancia - DistanciaTotal).toInt()
-            return (distancia - DistanciaTotal).toInt()
+            return (distancia - DistanciaTotal).redondear(2)
         }
     }
 

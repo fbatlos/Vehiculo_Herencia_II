@@ -1,18 +1,16 @@
 fun main(){
-    val coche1=Automovil("Jose", "wosl" , "23z", false,false,200f,20.00F, 0f)
-    val moto = Motocicleta(2,"luis","kuzuaki","5M4",10f,8F,2f)
-    println(coche1.combustibleActual)
-    println(coche1.realizaViaje(170))
-    println(coche1.combustibleActual)
-    println(coche1.realizaDerrape())
-    println(coche1.repostar(0f))
-    coche1.cambiarCondicionBritania(true)
-    println(coche1.toString())
-    println(moto.calcularAutonomia())
-    println(moto.realizarCaballito())
-    println(moto.realizaViaje(100))
-    println(moto.calcularAutonomia())
-    println(moto.repostar(0f))
-    println(moto.calcularAutonomia())
+    val listaparticipantes:List<Vehiculo> = listOf(
+        Automovil("Aurora", "Seat", "Panda", 50f, 50f * 0.1f, 0f, true) ,// Coche eléctrico con capacidad de 50 litros, inicia con el 10%
+        Automovil("Boreal", "BMW", "M8", 80f, 80f * 0.1f, 0f, false), // SUV híbrido con capacidad de 80 litros, inicia con el 10%
+        Motocicleta("Céfiro", "Derbi", "Motoreta", 15f, 15f * 0.1f, 0f, 500) ,// Motocicleta de gran cilindrada con capacidad de 15 litros, inicia con el 10%
+        Automovil("Dinamo", "Cintroen", "Sor", 70f, 70f * 0.1f, 0f, true), // Camioneta eléctrica con capacidad de 70 litros, inicia con el 10%
+        Automovil("Eclipse", "Renault", "Espacio", 60f, 60f * 0.1f, 0f, false), // Coupé deportivo con capacidad de 60 litros, inicia con el 10%
+        Motocicleta("Fénix", "Honda", "Vital", 20f, 20f * 0.1f, 0f, 250)// Motocicleta eléctrica con capacidad de 20 litros, inicia con el 10%
+    )
+
+    val megaCarrera = Carrera("Gran Prix",1000f , listaparticipantes)
+
+
+
 }
 
