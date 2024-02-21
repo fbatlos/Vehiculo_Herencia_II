@@ -1,22 +1,21 @@
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-open class Vehiculo(open val marca: String, open val modelo: String, open val capacidadCombistible: Float, open var combustibleActual: Float, open var kilometrosActuales:Int){
+open class Vehiculo(open val nombre: String,open val marca: String, open val modelo: String, open val capacidadCombustible: Float, open var combustibleActual: Float, open var kilometrosActuales:Float){
     init {
-        require(capacidadCombistible>=combustibleActual && capacidadCombistible > 0){"Datos no valido"}
+        comprobarNombre(nombre)
+        require(capacidadCombustible>=combustibleActual && capacidadCombustible > 0){"Datos no valido"}
         require(combustibleActual>0){"no valido"}
     }
-    override fun toString(): String {
-        return "Tu $marca $modelo , con una autonomia ${calcularAutonomia()}"
-    }
-    open fun calcularAutonomia():Int{
-        return (combustibleActual*10).toInt()
+
+    open fun calcularAutonomia():Float{
+        return (combustibleActual* KM_Litros_GAS).redondear(2)
     }
 
     open fun realizaViaje(distancia:Int ):Int{
-        val DistanciaTotal = combustibleActual*10
+        val DistanciaTotal = combustibleActual* KM_Litros_GAS
         if (DistanciaTotal>distancia) {
-            combustibleActual -=(distancia/10)
+            combustibleActual -=(distancia/ KM_Litros_GAS)
             kilometrosActuales +=distancia
             return 0
         }
@@ -25,15 +24,28 @@ open class Vehiculo(open val marca: String, open val modelo: String, open val ca
         return (distancia - DistanciaTotal).toInt()
     }
 
-
-
     open fun repostar(cantida:Float):Float{
-        if (cantida>capacidadCombistible|| cantida>(combustibleActual+cantida) ||cantida<= 0){
-            combustibleActual = capacidadCombistible
-            return combustibleActual
+        if (capacidadCombustible<(combustibleActual+cantida) ||cantida<= 0f){
+            combustibleActual = capacidadCombustible
+            return (capacidadCombustible-cantida.redondear(2))
         }
         combustibleActual += cantida
         return cantida.redondear(2)
+    }
+
+    companion object{
+        val listadonombres:MutableList<String> = mutableListOf()
+        fun comprobarNombre(nombre:String){
+            require(!listadonombres.contains(nombre)){"No se puede repetir los nombres."}
+            listadonombres.add(nombre)
+        }
+
+
+        const val KM_Litros_GAS = 10f
+    }
+
+    override fun toString(): String {
+        return "$nombre tu $marca $modelo , con una autonomia ${calcularAutonomia()}"
     }
 
 }
