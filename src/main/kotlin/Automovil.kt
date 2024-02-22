@@ -35,7 +35,7 @@ class Automovil(
         if (esElectrico){
             val DistanciaTotal = calcularAutonomia()
             if (DistanciaTotal>distancia) {
-                combustibleActual -=(distancia/ KM_Litro_Hibrido)
+                combustibleActual -=(distancia/ KM_Litro_Hibrido).redondear(2)
                 kilometrosActuales +=distancia
                 return 0f
             }

@@ -21,27 +21,32 @@ class Carrera(var nombreCarrera:String, val distanciaTotal:Float, val participan
             var distancia = Random.nextInt(10, 200).toFloat()
             var contadorDeDerrapes = (distancia/20).toInt()
             do {
-                realizarFiligrana(vehiculo)
+               // realizarFiligrana(vehiculo)
+
                 val paraLlegar = vehiculo.realizaViaje(20f)
+
                 when {
-                    contadorDeDerrapes != 1 -> {
+                    contadorDeDerrapes != 0 -> {
                         distancia -= if ( paraLlegar == 0f) {
                             20f
                         }else{
-                            20f-paraLlegar
+                            if (estadoCarrera == true){}
+                            (20f-paraLlegar)
                         }
                     }
-                    contadorDeDerrapes == 1 -> {
+                    contadorDeDerrapes == 0 -> {
                         distancia = vehiculo.realizaViaje(distancia)
                     }
 
                 }
-                if (vehiculo.calcularAutonomia() == 0f){
+
+                println("${vehiculo.nombre} a recorrido ${vehiculo.kilometrosActuales} y le quedan ${distancia.redondear(2)}")
+
+                if (vehiculo.combustibleActual == 0f){
                     repostarVehiculo(vehiculo)
                 }
                 contadorDeDerrapes--
-                println("${vehiculo.nombre} a recorrido ${vehiculo.kilometrosActuales} y le quedan ${distancia.redondear(2)}")
-            }while (contadorDeDerrapes != 0)
+            }while (contadorDeDerrapes != -1)
             actualizarPosiciones(vehiculo)
         }while (distancia != 0f)
     }
