@@ -9,7 +9,6 @@ fun main(){
     )
 
     val megaCarrera = Carrera("Gran Prix",1000f , listaparticipantes)
-
-
+    megaCarrera.iniciarCarrera()
 }
 
