@@ -50,7 +50,7 @@ class Automovil(
                 return 0f
             }
             combustibleActual = 0F
-            kilometrosActuales += (distancia - DistanciaTotal).toInt()
+            kilometrosActuales += (DistanciaTotal)
             return (distancia - DistanciaTotal).redondear(2)
         }
     }

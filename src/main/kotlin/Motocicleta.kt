@@ -34,7 +34,7 @@ class Motocicleta(
                 return 0f
             }
             combustibleActual = 0F
-            kilometrosActuales += (distancia - DistanciaTotal)
+            kilometrosActuales += (DistanciaTotal)
             return (distancia - DistanciaTotal).redondear(2)
     }
 

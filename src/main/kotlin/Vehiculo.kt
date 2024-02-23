@@ -26,7 +26,7 @@ open class Vehiculo(open val nombre: String,open val marca: String, open val mod
             return 0f
         }
         combustibleActual = 0F
-        kilometrosActuales += (distancia - DistanciaTotal).toInt()
+        kilometrosActuales += (DistanciaTotal)
         return (distancia - DistanciaTotal).redondear(2)
     }
 

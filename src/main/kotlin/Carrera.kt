@@ -4,9 +4,11 @@ import kotlin.random.Random
 class Carrera(var nombreCarrera:String, val distanciaTotal:Float, val participantes:List<Vehiculo>){
     var estadoCarrera:Boolean = false
     var historialAcciones:MutableMap<String,List<String>> = mutableMapOf()
-    val posiciones = mutableMapOf<String, Int>()
+    val posiciones = mutableMapOf<Int, String>()
 
     companion object{
+        val listaDeAcciones:MutableList<String> = mutableListOf()
+        val contadorDeRepostado = mutableMapOf<String,Int>()
         var vecesRepostado = 0
         var vecesFiligranas = 0
     }
@@ -14,60 +16,108 @@ class Carrera(var nombreCarrera:String, val distanciaTotal:Float, val participan
     fun iniciarCarrera(){
         estadoCarrera = true
         participantes.forEach { avanzarVehiculo(it) }
+        determinarGanador()
+        obtenerResultado()
     }
 
     fun avanzarVehiculo(vehiculo: Vehiculo){
+        listaDeAcciones.clear()
+        var distancia = distanciaTotal
+        var contadorDeTramos = (distancia/20).toInt()
         do {
-            var distancia = Random.nextInt(10, 200).toFloat()
-            var contadorDeDerrapes = (distancia/20).toInt()
-            do {
-               // realizarFiligrana(vehiculo)
+            realizarFiligrana(vehiculo)
+            when {
 
-                val paraLlegar = vehiculo.realizaViaje(20f)
+                contadorDeTramos != 0 -> {
+                    val paraLlegar = vehiculo.realizaViaje(20f)
 
-                when {
-                    contadorDeDerrapes != 0 -> {
-                        distancia -= if ( paraLlegar == 0f) {
-                            20f
-                        }else{
-                            if (estadoCarrera == true){}
-                            (20f-paraLlegar)
-                        }
+                    distancia -= if ( paraLlegar == 0f) {
+                        20f
+                    }else{
+                        (20f-paraLlegar)
                     }
-                    contadorDeDerrapes == 0 -> {
-                        distancia = vehiculo.realizaViaje(distancia)
-                    }
-
                 }
-
-                println("${vehiculo.nombre} a recorrido ${vehiculo.kilometrosActuales} y le quedan ${distancia.redondear(2)}")
-
-                if (vehiculo.combustibleActual == 0f){
-                    repostarVehiculo(vehiculo)
+                contadorDeTramos == 0 -> {
+                    distancia = vehiculo.realizaViaje(distancia)
                 }
-                contadorDeDerrapes--
-            }while (contadorDeDerrapes != -1)
-            actualizarPosiciones(vehiculo)
-        }while (distancia != 0f)
+            }
+
+            listaDeAcciones.add("${vehiculo.nombre} a recorrido ${vehiculo.kilometrosActuales} y le quedan ${distancia.redondear(2)}")
+
+            if (vehiculo.combustibleActual == 0f){
+                repostarVehiculo(vehiculo)
+            }
+            contadorDeTramos--
+
+        }while (contadorDeTramos != -1)
+        actualizarPosiciones()
+        historialAcciones.put(vehiculo.nombre, listaDeAcciones)
+        contadorDeRepostado.put(vehiculo.nombre, vecesRepostado)
+        vecesRepostado = 0
     }
 
     fun repostarVehiculo(vehiculo: Vehiculo){
         vecesRepostado++
         vehiculo.repostar()
-        println("${vehiculo.nombre} a repostado.")
+        listaDeAcciones.add("${vehiculo.nombre} a repostado.")
     }
 
     fun realizarFiligrana(vehiculo: Vehiculo){
-        vecesFiligranas++
-        when(vehiculo){
-            is Automovil -> vehiculo.realizaDerrape()
-            is Motocicleta -> vehiculo.realizarCaballito()
+        val numeroRandom = Random.nextInt(1,3)
+        when(numeroRandom){
+            1 ->{
+                when(vehiculo){
+                    is Automovil -> vehiculo.realizaDerrape()
+                    is Motocicleta -> vehiculo.realizarCaballito()
+                }
+                vecesFiligranas++
+                listaDeAcciones.add("${vehiculo.nombre} a realizado una filigrana.")
+            }
+
+            2 -> {
+                if (vehiculo.combustibleActual>2f){
+                    when(vehiculo){
+                        is Automovil -> {
+                            vehiculo.realizaDerrape()
+                            vehiculo.realizaDerrape()
+                        }
+                        is Motocicleta -> {
+                            vehiculo.realizarCaballito()
+                            vehiculo.realizarCaballito()
+                        }
+                    }
+                    vecesFiligranas+=2
+                    listaDeAcciones.add("${vehiculo.nombre} a realizado dos filigrana.")
+                }else{
+                    when(vehiculo){
+                        is Automovil -> vehiculo.realizaDerrape()
+                        is Motocicleta -> vehiculo.realizarCaballito()
+                    }
+                    vecesFiligranas++
+                    listaDeAcciones.add("${vehiculo.nombre} a realizado una filigrana.")
+                }
+            }
         }
-        println("${vehiculo.nombre} a realizado una filigrana.")
     }
 
-    fun actualizarPosiciones(vehiculo: Vehiculo){
-
+    fun actualizarPosiciones(){
+        val listaMezclada = participantes.shuffled()
+        var posicion = 1
+        for (participante in listaMezclada){
+            posiciones.put(posicion,participante.nombre)
+            posicion++
+        }
+        println(posiciones)
     }
 
+    fun determinarGanador(){
+        val ganador =posiciones.get(1)
+        println(ganador)
+    }
+
+    fun obtenerResultado(){
+        for (x in 1..6){
+            println("$x º ${posiciones.get(x)} ha reccorrido $distanciaTotal  , ha repostado ${contadorDeRepostado.get(posiciones.get(x))} veces y ${historialAcciones.get(posiciones.get(x))} ")
+        }
+    }
 }
