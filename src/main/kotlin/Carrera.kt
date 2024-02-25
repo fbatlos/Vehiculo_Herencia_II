@@ -1,33 +1,29 @@
 import kotlin.random.Random
 
 
-class Carrera(var nombreCarrera:String, val distanciaTotal:Float, val participantes:List<Vehiculo>){
+class Carrera(var nombreCarrera:String, val distanciaTotal:Float, var participantes:List<Vehiculo>){
     var estadoCarrera:Boolean = false
-    var historialAcciones:MutableMap<String,List<String>> = mutableMapOf()
+    var historialAcciones:MutableMap<String,MutableList<String>> = mutableMapOf()
     val posiciones = mutableMapOf<Int, String>()
-
-    companion object{
-        val listaDeAcciones:MutableList<String> = mutableListOf()
-        val contadorDeRepostado = mutableMapOf<String,Int>()
-        var vecesRepostado = 0
-        var vecesFiligranas = 0
-    }
+    var contadorDeRepostado = mutableMapOf<String,Int>()
+    var paradasRespostaje = 0
+    var vecesFiligranas = 0
 
     fun iniciarCarrera(){
         estadoCarrera = true
-        participantes.forEach { avanzarVehiculo(it) }
-        determinarGanador()
+        do {
+            participantes.forEach { avanzarVehiculo(it) }
+        }while (determinarGanador() == false)
+        actualizarPosiciones()
         obtenerResultado()
     }
 
     fun avanzarVehiculo(vehiculo: Vehiculo){
-        listaDeAcciones.clear()
-        var distancia = distanciaTotal
+        var distancia = Random.nextInt(10,250).toFloat()
         var contadorDeTramos = (distancia/20).toInt()
         do {
             realizarFiligrana(vehiculo)
             when {
-
                 contadorDeTramos != 0 -> {
                     val paraLlegar = vehiculo.realizaViaje(20f)
 
@@ -41,25 +37,26 @@ class Carrera(var nombreCarrera:String, val distanciaTotal:Float, val participan
                     distancia = vehiculo.realizaViaje(distancia)
                 }
             }
-
-            listaDeAcciones.add("${vehiculo.nombre} a recorrido ${vehiculo.kilometrosActuales} y le quedan ${distancia.redondear(2)}")
+            registarAccion(vehiculo,"${vehiculo.nombre} a recorrido ${vehiculo.kilometrosActuales.redondear(2)} y le quedan ${distancia.redondear(2)}")
 
             if (vehiculo.combustibleActual == 0f){
                 repostarVehiculo(vehiculo)
             }
+
             contadorDeTramos--
 
         }while (contadorDeTramos != -1)
-        actualizarPosiciones()
-        historialAcciones.put(vehiculo.nombre, listaDeAcciones)
-        contadorDeRepostado.put(vehiculo.nombre, vecesRepostado)
-        vecesRepostado = 0
+    }
+
+    fun registarAccion(corredor:Vehiculo,accion:String){
+        historialAcciones.computeIfAbsent(corredor.nombre){ mutableListOf()}.add(accion)
     }
 
     fun repostarVehiculo(vehiculo: Vehiculo){
-        vecesRepostado++
+
+        contadorDeRepostado.compute(vehiculo.nombre){ _,paradasARepostar-> (paradasARepostar?:0) + 1 }
         vehiculo.repostar()
-        listaDeAcciones.add("${vehiculo.nombre} a repostado.")
+        registarAccion(vehiculo, ("${vehiculo.nombre} a repostado.*********************"))
     }
 
     fun realizarFiligrana(vehiculo: Vehiculo){
@@ -71,7 +68,7 @@ class Carrera(var nombreCarrera:String, val distanciaTotal:Float, val participan
                     is Motocicleta -> vehiculo.realizarCaballito()
                 }
                 vecesFiligranas++
-                listaDeAcciones.add("${vehiculo.nombre} a realizado una filigrana.")
+                registarAccion(vehiculo,("${vehiculo.nombre} a realizado una filigrana."))
             }
 
             2 -> {
@@ -87,37 +84,80 @@ class Carrera(var nombreCarrera:String, val distanciaTotal:Float, val participan
                         }
                     }
                     vecesFiligranas+=2
-                    listaDeAcciones.add("${vehiculo.nombre} a realizado dos filigrana.")
+                    registarAccion(vehiculo, ("${vehiculo.nombre} a realizado dos filigrana."))
                 }else{
                     when(vehiculo){
                         is Automovil -> vehiculo.realizaDerrape()
                         is Motocicleta -> vehiculo.realizarCaballito()
                     }
                     vecesFiligranas++
-                    listaDeAcciones.add("${vehiculo.nombre} a realizado una filigrana.")
+                    registarAccion(vehiculo,("${vehiculo.nombre} a realizado una filigrana."))
                 }
             }
         }
     }
-
+    //Actualiza las posiciones
     fun actualizarPosiciones(){
-        val listaMezclada = participantes.shuffled()
+        //Seleccionamos el parametro para comparar
+        val comparador = compareBy<Vehiculo> {it.kilometrosActuales}
+        //Ordenamos la lista segun el parametro sekleccionado
+        participantes = participantes.sortedWith( comparador)
         var posicion = 1
-        for (participante in listaMezclada){
-            posiciones.put(posicion,participante.nombre)
-            posicion++
+        //recorremos la lista ordenada segun los kilometros actuales de vehiculo y le asignamos una posicion.
+        for (vehiculo in participantes){
+            posiciones.put(posicion,vehiculo.nombre)
+            ++posicion
         }
-        println(posiciones)
+
     }
 
-    fun determinarGanador(){
-        val ganador =posiciones.get(1)
-        println(ganador)
+    fun determinarGanador():Boolean{
+        //Seleccionamos el parametro para comparar
+        val comparador = compareBy<Vehiculo> {it.kilometrosActuales}
+        //Ordenamos la lista segun el parametro sekleccionado
+        val listaOrdenada = participantes.sortedWith( comparador)
+        if (listaOrdenada[5].kilometrosActuales >= 1000f){
+            return true
+        }
+        else{return false}
     }
 
     fun obtenerResultado(){
-        for (x in 1..6){
-            println("$x º ${posiciones.get(x)} ha reccorrido $distanciaTotal  , ha repostado ${contadorDeRepostado.get(posiciones.get(x))} veces y ${historialAcciones.get(posiciones.get(x))} ")
+        var posicion = 1
+        var lugarEnPosiciones = 6
+        var numeroDelParticipante = 5
+          //  for ()
+           // val resultado = ResultadoCarrera(
+
+
+         //   )
+        while (posicion != 7 ) {
+            val resultados: MutableList<ResultadoCarrera> = mutableListOf()
+            println(
+                "$posicion º ${posiciones.get(lugarEnPosiciones)} ha reccorrido ${participantes[numeroDelParticipante].kilometrosActuales.redondear(2)}  , ha repostado ${
+                    contadorDeRepostado.get(
+                        posiciones.get(lugarEnPosiciones)
+                    )
+                } veces y ${historialAcciones.get(posiciones.get(lugarEnPosiciones))} "
+            )
+
+
+
+
+
+
+            ++posicion
+            --lugarEnPosiciones
+            --numeroDelParticipante
         }
     }
+
+    data class ResultadoCarrera(
+        val vehiculo: Vehiculo,
+        val posicion: Int,
+        val kilometraje: Float,
+        val paradasRepostaje: Int,
+        val historialAcciones: List<String>
+    )
+
 }
