@@ -6,8 +6,8 @@ class Carrera(var nombreCarrera:String, val distanciaTotal:Float, var participan
     var historialAcciones:MutableMap<String,MutableList<String>> = mutableMapOf()
     val posiciones = mutableMapOf<Int, String>()
     var contadorDeRepostado = mutableMapOf<String,Int>()
-    var paradasRespostaje = 0
     var vecesFiligranas = 0
+
 
     fun iniciarCarrera(){
         estadoCarrera = true
@@ -56,7 +56,7 @@ class Carrera(var nombreCarrera:String, val distanciaTotal:Float, var participan
 
         contadorDeRepostado.compute(vehiculo.nombre){ _,paradasARepostar-> (paradasARepostar?:0) + 1 }
         vehiculo.repostar()
-        registarAccion(vehiculo, ("${vehiculo.nombre} a repostado.*********************"))
+        registarAccion(vehiculo, ("${vehiculo.nombre} a repostado."))
     }
 
     fun realizarFiligrana(vehiculo: Vehiculo){
@@ -126,38 +126,66 @@ class Carrera(var nombreCarrera:String, val distanciaTotal:Float, var participan
         var posicion = 1
         var lugarEnPosiciones = 6
         var numeroDelParticipante = 5
-          //  for ()
-           // val resultado = ResultadoCarrera(
+        val resultados: MutableList<ResultadoCarrera> = mutableListOf()
 
-
-         //   )
         while (posicion != 7 ) {
-            val resultados: MutableList<ResultadoCarrera> = mutableListOf()
-            println(
-                "$posicion º ${posiciones.get(lugarEnPosiciones)} ha reccorrido ${participantes[numeroDelParticipante].kilometrosActuales.redondear(2)}  , ha repostado ${
-                    contadorDeRepostado.get(
-                        posiciones.get(lugarEnPosiciones)
-                    )
-                } veces y ${historialAcciones.get(posiciones.get(lugarEnPosiciones))} "
+            val resultado = ResultadoCarrera(
+                participantes[numeroDelParticipante],
+                posicion,
+                participantes[numeroDelParticipante].kilometrosActuales.redondear(2),
+                contadorDeRepostado.get(
+                    posiciones.get(lugarEnPosiciones)
+                ),
+                historialAcciones.get(posiciones.get(lugarEnPosiciones))
             )
-
-
-
-
-
-
+            resultados.add(resultado)
             ++posicion
             --lugarEnPosiciones
             --numeroDelParticipante
         }
+
+        mostrarResultado(resultados)
     }
 
-    data class ResultadoCarrera(
-        val vehiculo: Vehiculo,
-        val posicion: Int,
-        val kilometraje: Float,
-        val paradasRepostaje: Int,
-        val historialAcciones: List<String>
-    )
+    fun mostrarResultado(resultados:MutableList<ResultadoCarrera>){
+        val emojiCocheCarreras = "\uD83C\uDFCE"
+        val emojiLineaMeta = "\uD83C\uDFC1"
+        val posiciones = resultados.map { it.posicion }
+        val nombres = resultados.map { it.vehiculo.nombre }
+        println("                                                      $emojiLineaMeta                      ")
+        println("                                                ${nombres[0]}$emojiCocheCarreras")
+        println("                                   ${nombres[1]}$emojiCocheCarreras                  ")
+        println("                              ${nombres[2]}$emojiCocheCarreras                            ")
+        println("                     ${nombres[3]}$emojiCocheCarreras                                      ")
+        println("        ${nombres[4]}$emojiCocheCarreras ")
+        println(" ${nombres[5]}$emojiCocheCarreras ")
 
+        val cantidadPuntos = 5
+        val tiempoEsperaMs = 1000L
+        for (i in 1..cantidadPuntos) {
+            print(".")
+            Thread.sleep(tiempoEsperaMs)
+        }
+
+        println("¡Tenemos ganador!")
+        println("${posiciones[0]} ${nombres[0]} \uD83E\uDD47")
+        println("${posiciones[1]} ${nombres[1]} \uD83E\uDD48")
+        println("${posiciones[2]} ${nombres[2]} \uD83E\uDD49")
+
+        println("Veamos el historial segun el orden de llegada.\n")
+        val kmRecorridos = resultados.map { it.kilometraje }
+        val paradasRepostaje = resultados.map { it.paradasRepostaje }
+        val historialAcciones = resultados.map { it.historialAcciones }
+        for (contador in 0..5){
+            println("${posiciones[contador]}º ${nombres[contador]} con ${kmRecorridos[contador]}km , ${paradasRepostaje[contador]} veces a repostado y sus acciones han sido ${historialAcciones[contador]}")
+        }
+    }
 }
+
+data class ResultadoCarrera(
+    val vehiculo: Vehiculo,
+    val posicion: Int,
+    val kilometraje: Float,
+    val paradasRepostaje: Int?,
+    val historialAcciones: MutableList<String>?
+)
