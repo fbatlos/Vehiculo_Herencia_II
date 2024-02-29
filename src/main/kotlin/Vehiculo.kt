@@ -1,7 +1,7 @@
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-open class Vehiculo(open val nombre: String,open val marca: String, open val modelo: String, open val capacidadCombustible: Float, open var combustibleActual: Float, open var kilometrosActuales:Float){
+open class Vehiculo(open val nombre: String,open val marca: String, open val modelo: String, open val capacidadCombustible: Float, open var combustibleActual: Float, open var kilometrosActuales:Float){//no poner los atributos open pues ya lo has puesto en la clase
     init {
         require(!comprobarNombre(this.nombre)){"El nombre está repetido."}
         require(capacidadCombustible>=combustibleActual && capacidadCombustible > 0){"No valido el volumen del combustible."}
