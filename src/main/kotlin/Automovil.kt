@@ -23,9 +23,9 @@ class Automovil(
 
     fun realizaDerrape():Float{
         if (esElectrico){
-            combustibleActual -= 0.625f
+            combustibleActual -= 0.625f // esto esta mas pues debería ser 6,25 / 15 y no 10 
         }else {
-            combustibleActual -= 0.75f
+            combustibleActual -= 0.75f //esto si esta bien pues es 7,5 /10
         }
         return combustibleActual
     }
