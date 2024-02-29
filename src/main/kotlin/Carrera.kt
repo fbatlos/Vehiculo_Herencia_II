@@ -12,13 +12,13 @@ class Carrera(var nombreCarrera:String, val distanciaTotal:Float, var participan
     fun iniciarCarrera(){
         estadoCarrera = true
         do {
-            participantes.forEach { avanzarVehiculo(it) }
+            participantes.forEach { avanzarVehiculo(it) } // Debería ser seleccionado de forma aleatoria
         }while (determinarGanador() == false)
         actualizarPosiciones()
         obtenerResultado()
     }
 
-    fun avanzarVehiculo(vehiculo: Vehiculo){
+    fun avanzarVehiculo(vehiculo: Vehiculo){ // no está del todo bien pues no se para en el 1000
         var distancia = Random.nextInt(10,250).toFloat()
         var contadorDeTramos = (distancia/20).toInt()
         do {
