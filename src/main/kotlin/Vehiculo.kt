@@ -30,7 +30,7 @@ open class Vehiculo(open val nombre: String,open val marca: String, open val mod
         return (distancia - DistanciaTotal).redondear(2)
     }
 
-    open fun repostar(cantida:Float = 0f):Float{
+    open fun repostar(cantida:Float = 0f):Float{//no hace falta e3l open
         if (capacidadCombustible<(combustibleActual+cantida) ||cantida<= 0f){
             combustibleActual = capacidadCombustible
             return (combustibleActual.redondear(2))
