@@ -18,7 +18,7 @@ class Motocicleta(
         return (combustibleActual* (KM_Litros_Motos+(cilindrada/1000))).redondear(2)
     }
 
-    fun realizarCaballito():Float{
+    fun realizarCaballito():Float{//no sabia como hacerlo así que hice un rango.
         when{
             cilindrada == 100 -> combustibleActual-=0.325F
             cilindrada >= 650 -> combustibleActual-=0.225F
